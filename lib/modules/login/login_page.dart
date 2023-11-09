@@ -1,8 +1,7 @@
 import 'package:app/modules/signUp/signUp_page.dart';
-import 'package:app/shared/ui/widgets/login%20and%20SignUp/backgroundImage.dart';
-import 'package:app/shared/ui/widgets/login%20and%20SignUp/passwordInput.dart';
-import 'package:app/shared/ui/widgets/login%20and%20SignUp/roundedButton.dart';
-import 'package:app/shared/ui/widgets/login%20and%20SignUp/textInput.dart';
+import 'package:app/shared/ui/widgets/login%20and%20SignUp/background_image.dart';
+import 'package:app/shared/ui/widgets/login%20and%20SignUp/rounded_button.dart';
+import 'package:app/shared/ui/widgets/login%20and%20SignUp/credential_text_field.dart';
 import 'package:app/theme/textStyles.dart';
 import 'package:flutter/material.dart';
 
@@ -38,17 +37,17 @@ class _LoginPageState extends State<LoginPage> {
                           Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                TextInput(
+                                credentialTextField(
                                   icon: Icons.email,
                                   hint: 'Email',
                                   inputType: TextInputType.emailAddress,
                                   inputAction: TextInputAction.next,
                                 ),
-                                PasswordInput(
-                                  icon: Icons.lock,
-                                  hint: 'Password',
-                                  inputAction: TextInputAction.done,
-                                ),
+                                credentialTextField(
+                                    icon: Icons.lock,
+                                    hint: 'Password',
+                                    inputAction: TextInputAction.done,
+                                    passText: true),
                                 Text('Forgot Password', style: kBodyText),
                               ]),
                           Column(
@@ -56,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
                               SizedBox(
                                 height: 100,
                               ),
-                              RoundedButton(
+                              roundedButton(
                                 buttonText: 'Login',
                                 onpress: () =>
                                     Navigator.pushNamed(context, '/home'),

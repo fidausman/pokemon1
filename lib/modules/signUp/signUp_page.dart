@@ -1,8 +1,7 @@
 import 'package:app/modules/login/login_page.dart';
-import 'package:app/shared/ui/widgets/login%20and%20SignUp/backgroundImage.dart';
-import 'package:app/shared/ui/widgets/login%20and%20SignUp/passwordInput.dart';
-import 'package:app/shared/ui/widgets/login%20and%20SignUp/roundedButton.dart';
-import 'package:app/shared/ui/widgets/login%20and%20SignUp/textInput.dart';
+import 'package:app/shared/ui/widgets/login%20and%20SignUp/background_image.dart';
+import 'package:app/shared/ui/widgets/login%20and%20SignUp/rounded_button.dart';
+import 'package:app/shared/ui/widgets/login%20and%20SignUp/credential_text_field.dart';
 import 'package:app/theme/textStyles.dart';
 import 'package:flutter/material.dart';
 
@@ -38,32 +37,33 @@ class _SignUpPageState extends State<SignUpPage> {
                           Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                TextInput(
+                                credentialTextField(
                                   icon: Icons.person,
                                   hint: 'UserName',
                                   inputAction: TextInputAction.next,
                                 ),
-                                TextInput(
+                                credentialTextField(
                                   icon: Icons.email,
                                   hint: 'Email',
                                   inputType: TextInputType.emailAddress,
                                   inputAction: TextInputAction.next,
                                 ),
-                                TextInput(
+                                credentialTextField(
                                   icon: Icons.phone,
                                   hint: 'Phone',
                                   inputType: TextInputType.phone,
                                   inputAction: TextInputAction.next,
                                 ),
-                                PasswordInput(
-                                  icon: Icons.lock_outline,
-                                  hint: 'Password',
-                                  inputAction: TextInputAction.next,
-                                ),
-                                PasswordInput(
+                                credentialTextField(
+                                    icon: Icons.lock_outline,
+                                    hint: 'Password',
+                                    inputAction: TextInputAction.next,
+                                    passText: true),
+                                credentialTextField(
                                   icon: Icons.lock,
                                   hint: 'Confirm Password',
                                   inputAction: TextInputAction.done,
+                                  passText: true,
                                 ),
                               ]),
                           Column(
@@ -71,7 +71,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               SizedBox(
                                 height: 20,
                               ),
-                              RoundedButton(
+                              roundedButton(
                                   buttonText: 'SignUp',
                                   onpress: () =>
                                       Navigator.pushNamed(context, '/home')),

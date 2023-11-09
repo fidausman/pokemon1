@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:app/shared/routes/router.dart' as router;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:animations/animations.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
