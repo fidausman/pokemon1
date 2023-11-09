@@ -48,42 +48,10 @@ class MyApp extends StatelessWidget {
           navigatorObservers: [BotToastNavigatorObserver()],
           debugShowCheckedModeBanner: false,
           routes: router.Router.getRoutes(context),
-          initialRoute: "/",
+          initialRoute: "/login",
         ),
         designSize: const Size(360, 640),
       ),
     );
-  }
-}
-
-class AnimatedImage extends StatefulWidget {
-  @override
-  _AnimatedImageState createState() => _AnimatedImageState();
-}
-
-class _AnimatedImageState extends State<AnimatedImage>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller =
-      AnimationController(
-        vsync: this,
-         duration: Duration(seconds: 3),
-         )..repeat(reverse: true);
-  late Animation<Offset> _animation = Tween(
-    begin: Offset.zero,
-    end: Offset(0, 0.08),
-  ).animate(_controller);
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SlideTransition(
-      position: _animation,
-      child: Image.asset('assets/images/login2.jpg'),
-      );
   }
 }
