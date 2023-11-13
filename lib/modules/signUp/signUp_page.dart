@@ -4,6 +4,7 @@ import 'package:app/shared/ui/widgets/login%20and%20SignUp/rounded_button.dart';
 import 'package:app/shared/ui/widgets/login%20and%20SignUp/credential_text_field.dart';
 import 'package:app/theme/textStyles.dart';
 import 'package:flutter/material.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -48,12 +49,36 @@ class _SignUpPageState extends State<SignUpPage> {
                                   inputType: TextInputType.emailAddress,
                                   inputAction: TextInputAction.next,
                                 ),
-                                credentialTextField(
-                                  icon: Icons.phone,
-                                  hint: 'Phone',
-                                  inputType: TextInputType.phone,
-                                  inputAction: TextInputAction.next,
-                                ),
+                                Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey[700]?.withOpacity(
+                                          0.7,
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(16)),
+                                    child: IntlPhoneField(
+                                      decoration: InputDecoration(
+                                          // contentPadding:
+                                          //     const EdgeInsets.symmetric(
+                                          //         vertical: 10),
+                                          border: InputBorder.none,
+                                          hintText: 'Phone',
+                                          hintStyle: kBodyText,
+                                          // prefixIcon: Padding(
+                                          //   padding: const EdgeInsets.symmetric(
+                                          //       horizontal: 20),
+                                          //   child: Icon(Icons.phone, size: 30),
+                                          // ),
+                                          prefixIconColor:
+                                              MaterialStateColor.resolveWith(
+                                                  (states) => states.contains(
+                                                          MaterialState.focused)
+                                                      ? Colors.red
+                                                      : Colors.grey.shade800)),
+                                      style: kBodyText,
+                                      keyboardType: TextInputType.phone,
+                                      textInputAction: TextInputAction.next,
+                                    )),
                                 credentialTextField(
                                     icon: Icons.lock_outline,
                                     hint: 'Password',
