@@ -5,6 +5,7 @@ import 'package:app/shared/ui/widgets/login%20and%20SignUp/credential_text_field
 import 'package:app/theme/textStyles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -16,6 +17,11 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
+    TextEditingController userName = TextEditingController();
+    // String phone;
+    TextEditingController email = TextEditingController();
+    TextEditingController password = TextEditingController();
+    TextEditingController confirmPassword = TextEditingController();
     return Stack(
       children: [
         backgroundImage(),
@@ -39,11 +45,13 @@ class _SignUpPageState extends State<SignUpPage> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 credentialTextField(
+                                  textFromField: userName,
                                   icon: Icons.person,
                                   hint: 'UserName',
                                   inputAction: TextInputAction.next,
                                 ),
                                 credentialTextField(
+                                  textFromField: email,
                                   icon: Icons.email,
                                   hint: 'Email',
                                   inputType: TextInputType.emailAddress,
@@ -77,14 +85,19 @@ class _SignUpPageState extends State<SignUpPage> {
                                                       : Colors.grey.shade800)),
                                       style: kBodyText,
                                       keyboardType: TextInputType.phone,
+                                      onChanged: (phone) {
+                                        //  phone =phone.completeNumber;
+                                      },
                                       textInputAction: TextInputAction.next,
                                     )),
                                 credentialTextField(
+                                    textFromField: password,
                                     icon: Icons.lock_outline,
                                     hint: 'Password',
                                     inputAction: TextInputAction.next,
                                     passText: true),
                                 credentialTextField(
+                                  textFromField: confirmPassword,
                                   icon: Icons.lock,
                                   hint: 'Confirm Password',
                                   inputAction: TextInputAction.done,

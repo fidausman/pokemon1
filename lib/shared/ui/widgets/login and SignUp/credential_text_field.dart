@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 Widget credentialTextField(
     {required final IconData icon,
     required final String hint,
+    required TextEditingController textFromField,
     final TextInputType? inputType,
     final TextInputAction? inputAction,
     bool passText = false}) {
@@ -15,7 +16,8 @@ Widget credentialTextField(
               0.7,
             ),
             borderRadius: BorderRadius.circular(16)),
-        child: TextField(
+        child: TextFormField(
+          controller: textFromField,
           decoration: InputDecoration(
               contentPadding: const EdgeInsets.symmetric(vertical: 20),
               border: InputBorder.none,

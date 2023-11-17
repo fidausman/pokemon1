@@ -15,6 +15,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
+    TextEditingController email = TextEditingController();
+    TextEditingController password = TextEditingController();
     return Stack(
       children: [
         backgroundImage(),
@@ -38,17 +40,23 @@ class _LoginPageState extends State<LoginPage> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 credentialTextField(
+                                  textFromField: email,
                                   icon: Icons.email,
                                   hint: 'Email',
                                   inputType: TextInputType.emailAddress,
                                   inputAction: TextInputAction.next,
                                 ),
                                 credentialTextField(
+                                    textFromField: password,
                                     icon: Icons.lock,
                                     hint: 'Password',
                                     inputAction: TextInputAction.done,
                                     passText: true),
-                                Text('Forgot Password', style: kBodyText),
+                                InkWell(
+                                    onTap: () =>
+                                        Navigator.pushNamed(context, '/otp'),
+                                    child: Text('Forgot Password',
+                                        style: kBodyText)),
                               ]),
                           Column(
                             children: [
