@@ -1,4 +1,9 @@
+import 'dart:developer';
+
+import 'package:app/modules/forgot_password/reset_password.dart';
 import 'package:app/shared/ui/widgets/login%20and%20SignUp/rounded_button.dart';
+import 'package:app/shared/utils/api_constants.dart';
+import 'package:dio/dio.dart';
 import 'package:app/theme/textStyles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,15 +11,29 @@ import 'package:pinput/pinput.dart';
 
 import '../../shared/ui/widgets/login and SignUp/background_image.dart';
 
-class OtpScreen extends StatelessWidget {
-  const OtpScreen({super.key});
+class OtpScreen extends StatefulWidget {
+  const OtpScreen({
+    super.key,
+    required this.secret,
+    required this.email,
+  });
+
+  final String email;
+  final String secret;
+
+  @override
+  State<OtpScreen> createState() => _OtpScreenState();
+}
+
+class _OtpScreenState extends State<OtpScreen> {
+  TextEditingController pinController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final defaultPinTheme = PinTheme(
         width: 56,
         height: 60,
-        textStyle: TextStyle(
+        textStyle: const TextStyle(
           fontSize: 22,
           color: Colors.black,
         ),
@@ -36,7 +55,7 @@ class OtpScreen extends StatelessWidget {
               body: SingleChildScrollView(
                   padding: const EdgeInsets.all(20),
                   child: Container(
-                      margin: EdgeInsets.only(top: 40),
+                      margin: const EdgeInsets.only(top: 40),
                       width: double.infinity,
                       child: Column(
                         children: [
@@ -46,7 +65,7 @@ class OtpScreen extends StatelessWidget {
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold)),
                           Container(
-                            margin: EdgeInsets.symmetric(vertical: 40),
+                            margin: const EdgeInsets.symmetric(vertical: 40),
                             child: Text('Enter the code sent to your email',
                                 style: TextStyle(
                                     color: Colors.black, fontSize: 18.sp)),
@@ -57,7 +76,8 @@ class OtpScreen extends StatelessWidget {
                                   style: TextStyle(
                                       color: Colors.black, fontSize: 18.sp))),
                           Pinput(
-                            length: 4,
+                            controller: pinController,
+                            length: 6,
                             defaultPinTheme: defaultPinTheme,
                             focusedPinTheme: defaultPinTheme.copyWith(
                                 decoration: defaultPinTheme.decoration!
@@ -84,8 +104,31 @@ class OtpScreen extends StatelessWidget {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 10),
                                 child: TextButton(
-                                    onPressed: () =>
-                                        Navigator.pushNamed(context, '/home'),
+                                    onPressed: () async {
+                                      print(widget.secret);
+                                      try {
+                                        Response response = await Dio().post(
+                                          "${ApiConstants.ngrokUrl}/otp/verify",
+                                          data: {
+                                            'secret': widget.secret,
+                                            'otp': pinController.text
+                                          }, // Set data parameter to an empty map for an empty body
+                                        );
+                                        if (response.statusCode == 201) {
+                                          log(widget.email);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ResetPasswordPage(
+                                                          emailId:
+                                                              widget.email)));
+                                        }
+                                        print("Response: $response");
+                                      } catch (e) {
+                                        print("Error: $e");
+                                      }
+                                    },
                                     child: Text(
                                       'verify',
                                       style: kBodyText.copyWith(

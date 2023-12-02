@@ -103,6 +103,11 @@ class _DrawerMenuWidgetState extends State<DrawerMenuWidget>
                   DrawerMenuItemWidget(
                       color: AppTheme.getColors(context).drawerLocations,
                       text: "Locations"),
+                  DrawerMenuItemWidget(
+                    color: AppTheme.getColors(context).drawerPokedex,
+                    text: "Logout",
+                    onTap: () {},
+                  ),
                 ],
               ),
             ],

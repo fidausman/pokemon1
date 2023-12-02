@@ -2,11 +2,10 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:app/modules/forgot_password/forgot_password.dart';
-import 'package:app/modules/login/jwtToken.dart';
+import 'package:app/modules/login/login_page.dart';
 import 'package:app/modules/otp/otp_page.dart';
 import 'package:app/modules/otp_api.dart';
 import 'package:app/modules/signUp/signUp_page.dart';
-import 'package:app/shared/refresh_tokens.dart';
 import 'package:app/shared/ui/widgets/login%20and%20SignUp/background_image.dart';
 import 'package:app/shared/ui/widgets/login%20and%20SignUp/password_text_field.dart';
 import 'package:app/shared/ui/widgets/login%20and%20SignUp/rounded_button.dart';
@@ -16,17 +15,22 @@ import 'package:app/theme/textStyles.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class ResetPasswordPage extends StatefulWidget {
+  ResetPasswordPage({
+    required this.emailId,
+    super.key,
+  });
+
+  String emailId;
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<ResetPasswordPage> createState() => _ResetPasswordPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final loginKey = GlobalKey<FormState>();
-  TextEditingController email = TextEditingController();
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
   TextEditingController password = TextEditingController();
+  TextEditingController confirmPassword = TextEditingController();
+  final loginKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     String? validator(String? value) {
@@ -63,28 +67,18 @@ class _LoginPageState extends State<LoginPage> {
                                 children: [
                                   CredentialTextField(
                                     validator: validator,
-                                    textFromField: email,
+                                    textFromField: password,
                                     icon: Icons.email,
-                                    hint: 'Email',
+                                    hint: 'Enter new password',
                                     inputType: TextInputType.emailAddress,
                                     inputAction: TextInputAction.next,
                                   ),
-                                  PasswordTextField(
+                                  CredentialTextField(
                                       validator: validator,
-                                      textFromField: password,
+                                      textFromField: confirmPassword,
                                       icon: Icons.lock,
-                                      hint: 'Password',
+                                      hint: 'confirm Password',
                                       inputAction: TextInputAction.done),
-                                  InkWell(
-                                      onTap: () async {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const ForgotPasswordPage()));
-                                      },
-                                      child: const Text('Forgot Password',
-                                          style: kBodyText)),
                                 ]),
                             Column(
                               children: [
@@ -92,52 +86,29 @@ class _LoginPageState extends State<LoginPage> {
                                   height: 100,
                                 ),
                                 roundedButton(
-                                    buttonText: 'Login',
+                                    buttonText: 'Reset Password',
                                     onpress: () async {
                                       // final isValid =
                                       //     loginKey.currentState!.validate();
                                       // if (isValid) {
                                       try {
+                                        log(widget.emailId);
                                         Dio dio = Dio();
-                                        Response response = await dio.post(
-                                            '${ApiConstants.ngrokUrl}/auth/login',
+                                        Response response = await dio.patch(
+                                            '${ApiConstants.ngrokUrl}/users/reset-password',
                                             data: {
-                                              "email": email.text,
+                                              "email": widget.emailId,
                                               "password": password.text
                                             });
-                                        log(response.toString());
-                                        // Map<String, dynamic> result =
-                                        //     response.data;
-                                        // JwtToken tokens =
-                                        //     JwtToken.fromJson(result);
-                                        // TokenManager.saveRefreshToken(
-                                        //     tokens.refresh);
-                                        Navigator.pushNamed(context, '/home');
+                                        if (response.statusCode == 200) {
+                                          Navigator.pushNamed(
+                                              context, '/login');
+                                        }
                                       } catch (e) {
                                         log(e.toString());
                                       }
-                                      // }
+                                      //}
                                     }),
-                                const SizedBox(
-                                  height: 60,
-                                ),
-                                Wrap(
-                                  children: [
-                                    const Text("Don't have an account?"),
-                                    InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const SignUpPage()));
-                                      },
-                                      child: const Text('SignUp',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold)),
-                                    )
-                                  ],
-                                ),
                                 const SizedBox(
                                   height: 30,
                                 ),

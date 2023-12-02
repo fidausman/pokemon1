@@ -1,11 +1,16 @@
+import 'dart:developer';
+
+import 'package:app/modules/login/jwtToken.dart';
 import 'package:app/modules/login/login_page.dart';
+import 'package:app/shared/refresh_tokens.dart';
 import 'package:app/shared/ui/widgets/login%20and%20SignUp/background_image.dart';
+import 'package:app/shared/ui/widgets/login%20and%20SignUp/password_text_field.dart';
 import 'package:app/shared/ui/widgets/login%20and%20SignUp/rounded_button.dart';
 import 'package:app/shared/ui/widgets/login%20and%20SignUp/credential_text_field.dart';
+import 'package:app/shared/utils/api_constants.dart';
 import 'package:app/theme/textStyles.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:intl_phone_field/phone_number.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -15,10 +20,19 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  final signUpKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
+    String? validaor(String? value) {
+      if (value != null || value != "") {
+        return null;
+      } else {
+        return "Error";
+      }
+    }
+
     TextEditingController userName = TextEditingController();
-    // String phone;
+    TextEditingController phoneNo = TextEditingController();
     TextEditingController email = TextEditingController();
     TextEditingController password = TextEditingController();
     TextEditingController confirmPassword = TextEditingController();
@@ -28,112 +42,117 @@ class _SignUpPageState extends State<SignUpPage> {
         Scaffold(
             backgroundColor: Colors.transparent,
             body: SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Container(
-                        height: 70,
-                        child: Center(child: Text('Pokemon', style: kHeading))),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 40),
+              child: ListView(
+                children: [
+                  const SizedBox(
+                      height: 70,
+                      child: Center(child: Text('Pokemon', style: kHeading))),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: Form(
+                      key: signUpKey,
                       child: Column(
                         children: [
                           Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                credentialTextField(
+                                CredentialTextField(
+                                  validator: validaor,
                                   textFromField: userName,
                                   icon: Icons.person,
                                   hint: 'UserName',
                                   inputAction: TextInputAction.next,
                                 ),
-                                credentialTextField(
+                                CredentialTextField(
+                                  validator: validaor,
                                   textFromField: email,
                                   icon: Icons.email,
                                   hint: 'Email',
                                   inputType: TextInputType.emailAddress,
                                   inputAction: TextInputAction.next,
                                 ),
-                                Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.grey[700]?.withOpacity(
-                                          0.7,
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(16)),
-                                    child: IntlPhoneField(
-                                      decoration: InputDecoration(
-                                          // contentPadding:
-                                          //     const EdgeInsets.symmetric(
-                                          //         vertical: 10),
-                                          border: InputBorder.none,
-                                          hintText: 'Phone',
-                                          hintStyle: kBodyText,
-                                          // prefixIcon: Padding(
-                                          //   padding: const EdgeInsets.symmetric(
-                                          //       horizontal: 20),
-                                          //   child: Icon(Icons.phone, size: 30),
-                                          // ),
-                                          prefixIconColor:
-                                              MaterialStateColor.resolveWith(
-                                                  (states) => states.contains(
-                                                          MaterialState.focused)
-                                                      ? Colors.red
-                                                      : Colors.grey.shade800)),
-                                      style: kBodyText,
-                                      keyboardType: TextInputType.phone,
-                                      onChanged: (phone) {
-                                        //  phone =phone.completeNumber;
-                                      },
-                                      textInputAction: TextInputAction.next,
-                                    )),
-                                credentialTextField(
-                                    textFromField: password,
-                                    icon: Icons.lock_outline,
-                                    hint: 'Password',
-                                    inputAction: TextInputAction.next,
-                                    passText: true),
-                                credentialTextField(
+                                CredentialTextField(
+                                  validator: validaor,
+                                  textFromField: phoneNo,
+                                  icon: Icons.phone,
+                                  hint: 'Phone',
+                                  inputAction: TextInputAction.next,
+                                ),
+                                PasswordTextField(
+                                  validator: validaor,
+                                  textFromField: password,
+                                  icon: Icons.lock_outline,
+                                  hint: 'Password',
+                                  inputAction: TextInputAction.next,
+                                ),
+                                PasswordTextField(
+                                  validator: validaor,
                                   textFromField: confirmPassword,
                                   icon: Icons.lock,
                                   hint: 'Confirm Password',
                                   inputAction: TextInputAction.done,
-                                  passText: true,
                                 ),
                               ]),
                           Column(
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 height: 20,
                               ),
                               roundedButton(
                                   buttonText: 'SignUp',
-                                  onpress: () =>
-                                      Navigator.pushNamed(context, '/home')),
-                              SizedBox(
+                                  onpress: () async {
+                                    final isValid =
+                                        signUpKey.currentState!.validate();
+                                    if (isValid) {
+                                      try {
+                                        Dio dio = Dio();
+                                        Response response = await dio.post(
+                                          '${ApiConstants.ngrokUrl}/auth/signup',
+                                          data: {
+                                            "userName": userName.text,
+                                            "phone": phoneNo.text,
+                                            "email": email.text,
+                                            "password": password.text,
+                                          },
+                                        );
+                                        log(response.toString());
+                                        log(response.toString());
+                                        // Map<String, dynamic> result =
+                                        //     response.data;
+                                        // JwtToken tokens =
+                                        //     JwtToken.fromJson(result);
+                                        // TokenManager.saveRefreshToken(
+                                        //     tokens.refresh);
+                                        Navigator.pushNamed(context, '/home');
+                                      } catch (e) {
+                                        log(e.toString());
+                                      }
+                                    }
+                                  }),
+                              const SizedBox(
                                 height: 30,
                               ),
                               Wrap(
                                 children: [
-                                  Text("Already have an account?"),
+                                  const Text("Already have an account?"),
                                   InkWell(
                                     onTap: () {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  LoginPage()));
+                                                  const LoginPage()));
                                     },
-                                    child: Text('SignIn',
+                                    child: const Text('SignIn',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold)),
                                   )
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 30,
                               ),
                             ],
@@ -141,8 +160,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ))
       ],
