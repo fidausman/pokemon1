@@ -12,7 +12,7 @@ Widget backgroundImage() {
       alignment: Alignment.center,
       decoration: const BoxDecoration(
           image: DecorationImage(
-              image: AssetImage("assets/images/pokemon_ball.jpg"),
+              image: AssetImage("assets/images/pokemon.jpg"),
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(Colors.black45, BlendMode.darken))),
     ),

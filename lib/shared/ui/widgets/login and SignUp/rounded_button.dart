@@ -6,7 +6,8 @@ Widget roundedButton(
     {required final String buttonText, required final Function() onpress}) {
   return Container(
       decoration: BoxDecoration(
-          color: Colors.red, borderRadius: BorderRadius.circular(16)),
+          color: Colors.red[800]?.withOpacity(0.7),
+          borderRadius: BorderRadius.circular(16)),
       width: double.infinity,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),

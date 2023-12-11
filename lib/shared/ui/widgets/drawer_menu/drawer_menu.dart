@@ -1,3 +1,4 @@
+import 'package:app/shared/providers/auth_state_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lottie/lottie.dart';
@@ -6,6 +7,7 @@ import 'package:app/shared/ui/widgets/animated_pokeball.dart';
 import 'package:app/shared/ui/widgets/drawer_menu/widgets/drawer_menu_item.dart';
 import 'package:app/shared/utils/app_constants.dart';
 import 'package:app/theme/app_theme.dart';
+import 'package:provider/provider.dart';
 
 class DrawerMenuWidget extends StatefulWidget {
   const DrawerMenuWidget({Key? key}) : super(key: key);
@@ -106,7 +108,11 @@ class _DrawerMenuWidgetState extends State<DrawerMenuWidget>
                   DrawerMenuItemWidget(
                     color: AppTheme.getColors(context).drawerPokedex,
                     text: "Logout",
-                    onTap: () {},
+                    onTap: () {
+                      _homeStore.setPage(HomePageType.POKEMON_GRID);
+                      Provider.of<AuthProvider>(context, listen: false)
+                          .logout(context);
+                    },
                   ),
                 ],
               ),

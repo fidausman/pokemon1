@@ -25,7 +25,7 @@ class CredentialTextField extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Container(
           decoration: BoxDecoration(
-              color: Colors.grey[700]?.withOpacity(
+              color: Colors.grey[600]?.withOpacity(
                 0.7,
               ),
               borderRadius: BorderRadius.circular(16)),

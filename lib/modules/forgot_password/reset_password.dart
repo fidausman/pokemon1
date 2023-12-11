@@ -1,15 +1,8 @@
-import 'dart:convert';
 import 'dart:developer';
 
-import 'package:app/modules/forgot_password/forgot_password.dart';
-import 'package:app/modules/login/login_page.dart';
-import 'package:app/modules/otp/otp_page.dart';
-import 'package:app/modules/otp_api.dart';
-import 'package:app/modules/signUp/signUp_page.dart';
 import 'package:app/shared/ui/widgets/login%20and%20SignUp/background_image.dart';
 import 'package:app/shared/ui/widgets/login%20and%20SignUp/password_text_field.dart';
 import 'package:app/shared/ui/widgets/login%20and%20SignUp/rounded_button.dart';
-import 'package:app/shared/ui/widgets/login%20and%20SignUp/credential_text_field.dart';
 import 'package:app/shared/utils/api_constants.dart';
 import 'package:app/theme/textStyles.dart';
 import 'package:dio/dio.dart';
@@ -65,7 +58,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  CredentialTextField(
+                                  PasswordTextField(
                                     validator: validator,
                                     textFromField: password,
                                     icon: Icons.email,
@@ -73,7 +66,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                                     inputType: TextInputType.emailAddress,
                                     inputAction: TextInputAction.next,
                                   ),
-                                  CredentialTextField(
+                                  PasswordTextField(
                                       validator: validator,
                                       textFromField: confirmPassword,
                                       icon: Icons.lock,

@@ -1,16 +1,25 @@
 import 'package:app/shared/utils/api_constants.dart';
+// import 'package:app/shared/utils/snackbars.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+enum AuthState {
+  LOGIN_FAILED,
+  LOGIN_SUCCESS,
+  EMAIL_NOT_VERIFIED,
+  SIGN_UP_FAILED,
+}
 
 class AuthService {
   static final _dio = Dio();
   Dio getDioInstance() => _dio;
 
-  Future<bool> login(String email, String password) async {
+  Future<AuthState> login(String username, String password) async {
     try {
       Response response = await _dio.post(
         '${ApiConstants.ngrokUrl}/auth/login',
-        data: {'email': email, 'password': password},
+        data: {'username': username, 'password': password},
       );
 
       if (response.statusCode == 201) {
@@ -24,16 +33,21 @@ class AuthService {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('accessToken', accessToken);
         prefs.setString('refreshToken', refreshToken);
-        prefs.setString('email', email);
+        prefs.setString('username', username);
         prefs.setString('password', password);
-        return true;
+        Future.delayed(const Duration(milliseconds: 100));
+        return AuthState.LOGIN_SUCCESS;
       } else if (response.statusCode == 404) {
-        return false;
+        return AuthState.LOGIN_FAILED;
+      } else if (response.statusCode == 401) {
+        return AuthState.EMAIL_NOT_VERIFIED;
       }
-      return false;
-    } catch (error) {
-      if (error is DioException) return false;
-      throw Exception(error);
+      return AuthState.LOGIN_FAILED;
+    } on DioException catch (err) {
+      if (err.response!.statusCode == 401) return AuthState.EMAIL_NOT_VERIFIED;
+      return AuthState.LOGIN_FAILED;
+    } catch (e) {
+      return AuthState.LOGIN_FAILED;
     }
   }
 
@@ -78,7 +92,7 @@ class AuthService {
     }
   }
 
-  Future<bool> signup({
+  Future<bool> register({
     required String username,
     required String email,
     required int phoneNumber,
@@ -88,19 +102,38 @@ class AuthService {
 
     final uri = '${ApiConstants.ngrokUrl}/auth/register';
     try {
-      final Response response = await _dio.post(uri, data: {
-        'username': username,
-        'email': email,
-        'phone_number': phoneNumber,
-        'password': password,
-      });
+      final Response response = await _dio.put(
+        uri,
+        data: {
+          'username': username,
+          'email': email,
+          'phone_number': phoneNumber,
+          'password': password,
+        },
+      );
+
+      print(response.statusMessage);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
+      } else if (response.statusCode == 409) {
+        final scaffoldKey = GlobalKey<ScaffoldState>();
+        // scaffoldKey.currentState!.showBottomSheet((context) {
+        //   return MySnackbars.error(
+        //       response.statusMessage ?? 'Unexpected error during signup');
+        // });
+        return false;
+      } else if (response.statusCode == 500) {
+        final scaffoldKey = GlobalKey<ScaffoldState>();
+        // scaffoldKey.currentState!.showBottomSheet((context) {
+        //   return MySnackbars.error(response.statusMessage ?? 'Server Error');
+        // });
+        return false;
+      } else {
+        return false;
       }
-      return false;
     } catch (e) {
-      throw Exception('Failed ot signup: $e');
+      throw Exception('Failed to signup: $e');
     }
   }
 }

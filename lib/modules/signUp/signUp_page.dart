@@ -1,8 +1,6 @@
 import 'dart:developer';
 
-import 'package:app/modules/login/jwtToken.dart';
 import 'package:app/modules/login/login_page.dart';
-import 'package:app/shared/refresh_tokens.dart';
 import 'package:app/shared/ui/widgets/login%20and%20SignUp/background_image.dart';
 import 'package:app/shared/ui/widgets/login%20and%20SignUp/password_text_field.dart';
 import 'package:app/shared/ui/widgets/login%20and%20SignUp/rounded_button.dart';
@@ -44,9 +42,9 @@ class _SignUpPageState extends State<SignUpPage> {
             body: SafeArea(
               child: ListView(
                 children: [
-                  const SizedBox(
-                      height: 70,
-                      child: Center(child: Text('Pokemon', style: kHeading))),
+                  // const SizedBox(
+                  //     height: 70,
+                  //     child: Center(child: Text('Pokemon', style: kHeading))),
                   const SizedBox(
                     height: 20,
                   ),
@@ -119,14 +117,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                           },
                                         );
                                         log(response.toString());
-                                        log(response.toString());
-                                        // Map<String, dynamic> result =
-                                        //     response.data;
-                                        // JwtToken tokens =
-                                        //     JwtToken.fromJson(result);
-                                        // TokenManager.saveRefreshToken(
-                                        //     tokens.refresh);
-                                        Navigator.pushNamed(context, '/home');
+                                        Navigator.pushNamed(context, '/login');
                                       } catch (e) {
                                         log(e.toString());
                                       }
@@ -137,7 +128,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                               Wrap(
                                 children: [
-                                  const Text("Already have an account?"),
+                                  const Text("Already have an account?",
+                                      style: TextStyle(color: Colors.white)),
                                   InkWell(
                                     onTap: () {
                                       Navigator.push(
@@ -148,7 +140,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                     },
                                     child: const Text('SignIn',
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold)),
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white)),
                                   )
                                 ],
                               ),
