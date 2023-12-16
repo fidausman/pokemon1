@@ -22,10 +22,10 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     String? validaor(String? value) {
-      if (value != null || value != "") {
-        return null;
+      if (value == null || value == "") {
+        return 'This field must not be empty';
       } else {
-        return "Error";
+        return null;
       }
     }
 

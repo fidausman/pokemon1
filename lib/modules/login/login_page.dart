@@ -58,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     String? validator(String? value) {
-      if (value != null || value != "") {
+      if (value == null || value == "") {
         return 'This field must not be empty';
       } else {
         return null;

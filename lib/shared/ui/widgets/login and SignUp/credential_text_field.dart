@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:app/theme/textStyles.dart';
 import 'package:flutter/material.dart';
 
@@ -45,6 +47,7 @@ class CredentialTextField extends StatelessWidget {
                         ? Colors.red
                         : Colors.grey.shade800)),
             validator: validator,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             style: kBodyText,
             keyboardType: inputType,
             textInputAction: inputAction,

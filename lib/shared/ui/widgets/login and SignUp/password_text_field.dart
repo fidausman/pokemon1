@@ -67,6 +67,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
                         ? Colors.red
                         : Colors.grey.shade800)),
             validator: widget.validator,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             style: kBodyText,
             obscureText: _isObscured,
             keyboardType: widget.inputType,

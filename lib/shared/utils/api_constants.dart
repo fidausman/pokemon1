@@ -8,5 +8,5 @@ class ApiConstants {
   static String get pokemonItems =>
       "https://pokedex.alansantos.dev/api/items.json";
 
-  static String get ngrokUrl => 'https://6715-103-70-197-9.ngrok-free.app';
+  static String get ngrokUrl => 'https://41fc-103-42-196-178.ngrok-free.app';
 }
