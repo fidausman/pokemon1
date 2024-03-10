@@ -1,4 +1,13 @@
+import 'dart:developer';
+
+import 'package:app/modules/daily_checkin/daily_checkin_page.dart';
+import 'package:app/modules/favourites/favouritesPage.dart';
+import 'package:app/modules/news/newsPage.dart';
+import 'package:app/modules/store/choose_pokemon.dart';
+import 'package:app/modules/video/videoList.dart';
+import 'package:app/shared/models/checkin_model.dart';
 import 'package:app/shared/providers/auth_state_provider.dart';
+import 'package:app/shared/repositories/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lottie/lottie.dart';
@@ -25,7 +34,7 @@ class _DrawerMenuWidgetState extends State<DrawerMenuWidget>
   @override
   void initState() {
     _controller =
-        AnimationController(vsync: this, duration: Duration(seconds: 2))
+        AnimationController(vsync: this, duration: const Duration(seconds: 2))
           ..repeat();
 
     super.initState();
@@ -42,7 +51,7 @@ class _DrawerMenuWidgetState extends State<DrawerMenuWidget>
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Container(
-      color: Theme.of(context).backgroundColor,
+      color: Theme.of(context).colorScheme.background,
       child: Stack(
         children: [
           Column(
@@ -64,7 +73,7 @@ class _DrawerMenuWidgetState extends State<DrawerMenuWidget>
                       const SizedBox(
                         width: 5,
                       ),
-                      Text("Pokedex", style: textTheme.headline1),
+                      Text("Pokedex", style: textTheme.displayLarge),
                     ],
                   ),
                 ],
@@ -107,24 +116,71 @@ class _DrawerMenuWidgetState extends State<DrawerMenuWidget>
                       text: "Locations"),
                   DrawerMenuItemWidget(
                     color: AppTheme.getColors(context).drawerPokedex,
-                    text: "Logout",
+                    text: "DailyCheckin",
                     onTap: () {
-                      _homeStore.setPage(HomePageType.POKEMON_GRID);
-                      Provider.of<AuthProvider>(context, listen: false)
-                          .logout(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const DailyCheckinPage()));
                     },
                   ),
+                  DrawerMenuItemWidget(
+                    color: AppTheme.getColors(context).drawerPokedex,
+                    text: "Favourites",
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const FavouritesList()));
+                    },
+                  ),
+                  DrawerMenuItemWidget(
+                    color: AppTheme.getColors(context).drawerPokedex,
+                    text: "News",
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const NewsPage()));
+                    },
+                  ),
+                  DrawerMenuItemWidget(
+                    color: AppTheme.getColors(context).drawerPokedex,
+                    text: "Videos",
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const VideoList()));
+                    },
+                  ),
+                  DrawerMenuItemWidget(
+                    color: AppTheme.getColors(context).drawerPokedex,
+                    text: "Store",
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ChoosePokemon()));
+                    },
+                  ),
+                  DrawerMenuItemWidget(
+                      color: AppTheme.getColors(context).drawerPokedex,
+                      text: "Logout",
+                      onTap: () async {
+                        await AuthService.instance.logout();
+                      }),
                 ],
               ),
             ],
           ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Lottie.asset(
-              AppConstants.diglettLottie,
-              height: 200.0,
-            ),
-          ),
+          // Align(
+          //   alignment: Alignment.bottomRight,
+          //   child: Lottie.asset(
+          //     AppConstants.diglettLottie,
+          //     height: 200.0,
+          //   ),
+          // ),
         ],
       ),
     );

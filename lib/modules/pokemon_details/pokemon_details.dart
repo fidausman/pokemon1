@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:animated_theme_switcher/animated_theme_switcher.dart';
+import 'package:app/shared/providers/favourites_provider.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/foundation.dart';
@@ -20,6 +21,7 @@ import 'package:app/shared/ui/canvas/white_pokeball_canvas.dart';
 import 'package:app/shared/ui/enums/device_screen_type.dart';
 import 'package:app/shared/utils/converters.dart';
 import 'package:app/theme/app_theme.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../theme/dark/dark_theme.dart';
@@ -54,7 +56,7 @@ class _PokemonDetailsPageState extends State<PokemonDetailsPage>
     player = AudioPlayer();
 
     _animationController =
-        AnimationController(vsync: this, duration: Duration(seconds: 2))
+        AnimationController(vsync: this, duration: const Duration(seconds: 2))
           ..repeat();
   }
 
@@ -82,11 +84,17 @@ class _PokemonDetailsPageState extends State<PokemonDetailsPage>
       child: Builder(builder: (context) {
         return Scaffold(
           appBar: PreferredSize(
-            preferredSize: Size.fromHeight(70),
+            preferredSize: const Size.fromHeight(70),
             child: Stack(
               children: [
                 Observer(
                   builder: (_) {
+                    Future.delayed(const Duration(seconds: 1), () {
+                      context
+                          .read<FavouritesProvider>()
+                          .checkIfCurrentIsFavourite(
+                              context, _pokemonStore.pokemonSummary!);
+                    });
                     return Container(
                       height: size.height,
                       width: size.width,
@@ -106,7 +114,7 @@ class _PokemonDetailsPageState extends State<PokemonDetailsPage>
                         height: 144,
                         width: 144,
                         decoration: BoxDecoration(
-                          color: Theme.of(context).backgroundColor,
+                          color: Theme.of(context).colorScheme.background,
                           borderRadius: BorderRadius.circular(24),
                         ),
                       ),
@@ -127,11 +135,11 @@ class _PokemonDetailsPageState extends State<PokemonDetailsPage>
                 Observer(builder: (_) {
                   return AppBar(
                     title: AnimatedOpacity(
-                        duration: Duration(milliseconds: 30),
+                        duration: const Duration(milliseconds: 30),
                         opacity: _pokemonDetailsStore.opacityTitleAppbar,
                         child: Visibility(
-                          child: AppBarNavigationWidget(),
                           visible: _pokemonDetailsStore.opacityTitleAppbar > 0,
+                          child: AppBarNavigationWidget(),
                         )),
                     backgroundColor: Colors.transparent,
                     shadowColor: Colors.transparent,
@@ -144,37 +152,43 @@ class _PokemonDetailsPageState extends State<PokemonDetailsPage>
                       },
                     ),
                     actions: [
-                      if (_pokemonStore
-                          .isFavorite(_pokemonStore.pokemon!.number))
-                        IconButton(
-                          icon: Icon(
-                            Icons.favorite,
-                            color: AppTheme.getColors(context)
-                                .pokemonDetailsTitleColor,
-                          ),
-                          onPressed: () {
-                            _pokemonStore.removeFavoritePokemon(
-                                _pokemonStore.pokemon!.number);
-
-                            BotToast.showText(
-                                text:
-                                    "${_pokemonStore.pokemon!.name} was removed from favorites");
-                          },
-                        ),
-                      if (!_pokemonStore
-                          .isFavorite(_pokemonStore.pokemon!.number))
-                        IconButton(
-                          icon: Icon(Icons.favorite_border,
+                      Consumer<FavouritesProvider>(
+                          builder: (context, provider, _) {
+                        if (provider.isFavourite) {
+                          return IconButton(
+                            icon: Icon(
+                              Icons.favorite,
                               color: AppTheme.getColors(context)
-                                  .pokemonDetailsTitleColor),
-                          onPressed: () {
-                            _pokemonStore.addFavoritePokemon(
-                                _pokemonStore.pokemon!.number);
-                            BotToast.showText(
-                                text:
-                                    "${_pokemonStore.pokemon!.name} was favorited");
-                          },
-                        ),
+                                  .pokemonDetailsTitleColor,
+                            ),
+                            onPressed: () {
+                              provider.removeFavourite(context,
+                                  _pokemonStore.pokemonSummary!.number);
+                              _pokemonStore.removeFavoritePokemon(
+                                  _pokemonStore.pokemon!.number);
+
+                              BotToast.showText(
+                                  text:
+                                      "${_pokemonStore.pokemon!.name} was removed from favorites");
+                            },
+                          );
+                        } else {
+                          return IconButton(
+                            icon: Icon(Icons.favorite_border,
+                                color: AppTheme.getColors(context)
+                                    .pokemonDetailsTitleColor),
+                            onPressed: () {
+                              provider.addFavourite(context,
+                                  _pokemonStore.pokemonSummary!.number);
+                              _pokemonStore.addFavoritePokemon(
+                                  _pokemonStore.pokemon!.number);
+                              BotToast.showText(
+                                  text:
+                                      "${_pokemonStore.pokemon!.name} was favorited");
+                            },
+                          );
+                        }
+                      }),
                       IconButton(
                         onPressed: () {
                           Scaffold.of(context).openEndDrawer();
@@ -182,7 +196,7 @@ class _PokemonDetailsPageState extends State<PokemonDetailsPage>
                         icon: ThemeSwitcher(builder: (context) {
                           return InkWell(
                             onTap: () async {
-                              ThemeSwitcher.of(context)?.changeTheme(
+                              ThemeSwitcher.of(context).changeTheme(
                                   theme: Theme.of(context).brightness ==
                                           Brightness.light
                                       ? darkTheme
@@ -218,7 +232,7 @@ class _PokemonDetailsPageState extends State<PokemonDetailsPage>
                     flex: 1,
                     child: Row(
                       children: [
-                        Container(
+                        SizedBox(
                           width: size.width,
                           height: size.height,
                           child: Stack(
@@ -233,11 +247,13 @@ class _PokemonDetailsPageState extends State<PokemonDetailsPage>
                                 alignment: Alignment.bottomCenter,
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.only(
+                                    borderRadius: const BorderRadius.only(
                                       topLeft: Radius.circular(30),
                                       topRight: Radius.circular(30),
                                     ),
-                                    color: Theme.of(context).backgroundColor,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .background,
                                   ),
                                   height: 80,
                                 ),
@@ -248,7 +264,8 @@ class _PokemonDetailsPageState extends State<PokemonDetailsPage>
                                   child: Padding(
                                     padding: const EdgeInsets.only(bottom: 20),
                                     child: AnimatedOpacity(
-                                      duration: Duration(milliseconds: 30),
+                                      duration:
+                                          const Duration(milliseconds: 30),
                                       opacity:
                                           _pokemonDetailsStore.opacityPokemon,
                                       child: SizedBox(
@@ -272,7 +289,8 @@ class _PokemonDetailsPageState extends State<PokemonDetailsPage>
                                                       .toDouble()),
                                               painter: PokeballLogoPainter(
                                                   color: Theme.of(context)
-                                                      .backgroundColor
+                                                      .colorScheme
+                                                      .background
                                                       .withOpacity(0.3)),
                                             ),
                                           ),
@@ -286,13 +304,13 @@ class _PokemonDetailsPageState extends State<PokemonDetailsPage>
                                 builder: (_) => Align(
                                   alignment: Alignment.bottomCenter,
                                   child: AnimatedOpacity(
-                                    duration: Duration(milliseconds: 300),
+                                    duration: const Duration(milliseconds: 300),
                                     opacity:
                                         _pokemonDetailsStore.opacityPokemon,
                                     child: Padding(
                                       padding:
                                           const EdgeInsets.only(bottom: 30),
-                                      child: Container(
+                                      child: SizedBox(
                                         height: 220,
                                         child: Stack(
                                           children: [
@@ -326,21 +344,23 @@ class _PokemonDetailsPageState extends State<PokemonDetailsPage>
                                                       child: Icon(
                                                         Icons.arrow_back_ios,
                                                         color: Theme.of(context)
-                                                            .backgroundColor
+                                                            .colorScheme
+                                                            .background
                                                             .withOpacity(0.3),
                                                         size: 70,
                                                       ),
                                                       onTap: () {
                                                         _pageController.previousPage(
-                                                            duration: Duration(
-                                                                milliseconds:
-                                                                    300),
+                                                            duration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        300),
                                                             curve: Curves
                                                                 .fastLinearToSlowEaseIn);
                                                       },
                                                     ),
                                                   ),
-                                                  SizedBox(
+                                                  const SizedBox(
                                                     width: 280,
                                                   ),
                                                   Padding(
@@ -351,15 +371,17 @@ class _PokemonDetailsPageState extends State<PokemonDetailsPage>
                                                       child: Icon(
                                                         Icons.arrow_forward_ios,
                                                         color: Theme.of(context)
-                                                            .backgroundColor
+                                                            .colorScheme
+                                                            .background
                                                             .withOpacity(0.3),
                                                         size: 60,
                                                       ),
                                                       onTap: () {
                                                         _pageController.nextPage(
-                                                            duration: Duration(
-                                                                milliseconds:
-                                                                    300),
+                                                            duration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        300),
                                                             curve: Curves
                                                                 .fastLinearToSlowEaseIn);
                                                       },
@@ -376,7 +398,7 @@ class _PokemonDetailsPageState extends State<PokemonDetailsPage>
                               ),
                               Observer(
                                 builder: (_) => AnimatedOpacity(
-                                  duration: Duration(milliseconds: 30),
+                                  duration: const Duration(milliseconds: 30),
                                   opacity: _pokemonDetailsStore.opacityPokemon,
                                   child: PokemonTitleInfoWidget(),
                                 ),
@@ -391,7 +413,7 @@ class _PokemonDetailsPageState extends State<PokemonDetailsPage>
                     flex: 1,
                     child: Row(
                       children: [
-                        Container(
+                        SizedBox(
                           width: size.width,
                           height: size.height,
                         )
@@ -400,7 +422,7 @@ class _PokemonDetailsPageState extends State<PokemonDetailsPage>
                   ),
                 ],
               ),
-              Container(
+              SizedBox(
                 width: size.width,
                 height: size.height,
                 child: PokemonMobilePanelWidget(

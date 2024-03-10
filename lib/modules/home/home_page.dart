@@ -2,6 +2,7 @@ import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:app/modules/home/home_page_store.dart';
 import 'package:app/modules/items/items_page.dart';
 import 'package:app/modules/pokemon_grid/pokemon_grid_page.dart';
+import 'package:app/shared/providers/favourites_provider.dart';
 import 'package:app/shared/stores/item_store/item_store.dart';
 import 'package:app/shared/stores/pokemon_store/pokemon_store.dart';
 import 'package:app/shared/ui/widgets/app_bar.dart';
@@ -11,11 +12,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key? key}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -48,19 +50,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     _backgroundAnimationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 250),
     );
     _blackBackgroundOpacityAnimation =
         Tween(begin: 0.0, end: 1.0).animate(_backgroundAnimationController);
 
     _fabAnimationRotationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 400),
     );
 
     _fabAnimationOpenController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 250),
     );
 
     _fabRotateAnimation = Tween(begin: 180.0, end: 0.0).animate(CurvedAnimation(
@@ -140,7 +142,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         case HomePageType.POKEMON_GRID:
                           return PokemonGridPage();
                         case HomePageType.ITENS:
-                          return ItemsPage();
+                          return const ItemsPage();
                         default:
                           return PokemonGridPage();
                       }

@@ -1,3 +1,4 @@
+import 'package:app/shared/providers/favourites_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +8,13 @@ import 'package:app/modules/pokemon_details/pokemon_details.dart';
 import 'package:app/modules/pokemon_grid/widgets/poke_item.dart';
 import 'package:app/shared/models/pokemon_summary.dart';
 import 'package:app/shared/stores/pokemon_store/pokemon_store.dart';
+import 'package:provider/provider.dart';
 
 class PokemonGridWidget extends StatefulWidget {
   final PokemonStore pokemonStore;
 
-  PokemonGridWidget({Key? key, required this.pokemonStore}) : super(key: key);
+  const PokemonGridWidget({Key? key, required this.pokemonStore})
+      : super(key: key);
 
   @override
   _PokemonGridWidgetState createState() => _PokemonGridWidgetState();
@@ -57,11 +60,11 @@ class _PokemonGridWidgetState extends State<PokemonGridWidget> {
     List<Widget> items = [];
 
     for (int index = initialRange; index < finalRange; index++) {
-      final _pokemon = widget.pokemonStore.getPokemon(index);
+      final pokemon = widget.pokemonStore.getPokemon(index);
 
-      items.add(_buildPokemonItem(index: index, pokemon: _pokemon));
+      items.add(_buildPokemonItem(index: index, pokemon: pokemon));
 
-      _preCachePokemonImage(pokemon: _pokemon);
+      _preCachePokemonImage(pokemon: pokemon);
     }
 
     if (maxRange == finalRange) {
@@ -85,9 +88,9 @@ class _PokemonGridWidgetState extends State<PokemonGridWidget> {
         : (nextPage * _pageSize) + _pageSize;
 
     for (int index = initialRange; index < finalRange; index++) {
-      final _pokemon = widget.pokemonStore.getPokemon(index);
+      final pokemon = widget.pokemonStore.getPokemon(index);
 
-      precacheImage(Image.network(_pokemon.thumbnailUrl).image, context);
+      precacheImage(Image.network(pokemon.thumbnailUrl).image, context);
     }
   }
 
@@ -101,16 +104,21 @@ class _PokemonGridWidgetState extends State<PokemonGridWidget> {
 
   Widget _buildPokemonItem(
       {required int index, required PokemonSummary pokemon}) {
-    return InkWell(
+    return GestureDetector(
       onTap: () async {
-        await widget.pokemonStore.setPokemon(index);
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) {
-            return PokemonDetailsPage();
-          }),
+        await context.read<FavouritesProvider>().fetchFavourites(context);
+        await widget.pokemonStore.setPokemon(index).then(
+          (value) {
+            context
+                .read<FavouritesProvider>()
+                .checkIfCurrentIsFavourite(context, pokemon);
+          },
         );
+        Navigator.push(context, MaterialPageRoute(
+          builder: (_) {
+            return const PokemonDetailsPage();
+          },
+        ));
       },
       child: Ink(
         child: PokeItemWidget(

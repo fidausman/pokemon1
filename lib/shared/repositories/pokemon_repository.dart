@@ -10,15 +10,11 @@ class PokemonRepository {
   Future<List<PokemonSummary>> fetchPokemonsSummary() async {
     try {
       final response =
-          await http.get(Uri.parse(ApiConstants.pokedexSummaryData));
+          await http.get(Uri.parse('${ApiConstants.cyclic}/pokemons'));
 
-      return List<PokemonSummary>.from(
-        json.decode(Utf8Decoder().convert(response.body.codeUnits)).map(
-              (model) => PokemonSummary.fromJson(model),
-            ),
-      );
+      return pokemonSummaryFromJson(response.body);
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -33,7 +29,7 @@ class PokemonRepository {
         return favorites;
       }
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -42,7 +38,7 @@ class PokemonRepository {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setStringList('favorites-pokemons', favorites);
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -52,9 +48,9 @@ class PokemonRepository {
           await http.get(Uri.parse(ApiConstants.pokemonDetails(number)));
 
       return Pokemon.fromJson(
-          jsonDecode(Utf8Decoder().convert(response.body.codeUnits)));
+          jsonDecode(const Utf8Decoder().convert(response.body.codeUnits)));
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 }

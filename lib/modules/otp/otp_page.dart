@@ -108,7 +108,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                       print(widget.secret);
                                       try {
                                         Response response = await Dio().post(
-                                          "${ApiConstants.ngrokUrl}/otp/verify",
+                                          "${ApiConstants.cyclic}/otp/verify",
                                           data: {
                                             'secret': widget.secret,
                                             'otp': pinController.text

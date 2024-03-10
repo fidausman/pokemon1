@@ -8,7 +8,7 @@ class OtpApi {
   Future<String> otpGenerate() async {
     try {
       Response response = await Dio().post(
-        "${ApiConstants.ngrokUrl}/otp/generate",
+        "${ApiConstants.cyclic}/otp/generate",
         data: {}, // Set data parameter to an empty map for an empty body
       );
       print("Response: $response");

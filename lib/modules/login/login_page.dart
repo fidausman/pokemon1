@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:app/modules/forgot_password/forgot_password.dart';
+import 'package:app/modules/home/home_page.dart';
 import 'package:app/modules/login/jwtToken.dart';
 import 'package:app/modules/otp/otp_page.dart';
 import 'package:app/modules/otp_api.dart';
@@ -33,24 +34,25 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    checkIfCredentialsExistOnDevice();
+    //checkIfCredentialsExistOnDevice();
   }
 
-  Future<void> checkIfCredentialsExistOnDevice() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.containsKey('email') && prefs.containsKey('password')) {
-      final email = prefs.getString('email')!;
-      final password = prefs.getString('password')!;
-      final AuthState loginResult = await AuthService().login(email, password);
-      if (loginResult == AuthState.LOGIN_SUCCESS) {
-        context.read<AuthProvider>().getUserInfo();
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        Navigator.pop(context);
-        return;
-      }
-    }
-  }
+  // Future<void> checkIfCredentialsExistOnDevice() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   if (prefs.containsKey('email') && prefs.containsKey('password')) {
+  //     final email = prefs.getString('email')!;
+
+  //     final password = prefs.getString('password')!;
+  //     final AuthState loginResult = await AuthService().login(email, password);
+  //     if (loginResult == AuthState.LOGIN_SUCCESS) {
+  //       context.read<AuthProvider>().getUserInfo();
+  //       Navigator.pushReplacementNamed(context, '/home');
+  //     } else {
+  //       Navigator.pop(context);
+  //       return;
+  //     }
+  //  }
+  //}
 
   final loginKey = GlobalKey<FormState>();
   TextEditingController email = TextEditingController();
@@ -80,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                     // const SizedBox(
                     //   height: 100,
                     // ),
-                    SizedBox(
+                    const SizedBox(
                       height: 150,
                     ),
                     Container(
@@ -130,22 +132,18 @@ class _LoginPageState extends State<LoginPage> {
                                           loginKey.currentState!.validate();
                                       if (isValid) {
                                         try {
-                                          Dio dio = Dio();
-                                          Response response = await dio.post(
-                                              '${ApiConstants.ngrokUrl}/auth/login',
-                                              data: {
-                                                "email": email.text,
-                                                "password": password.text
-                                              });
-                                          log(response.toString());
-                                          Map<String, dynamic> result =
-                                              response.data;
-                                          JwtToken tokens =
-                                              JwtToken.fromJson(result);
-                                          TokenManager.saveRefreshToken(
-                                              tokens.refresh);
-                                          Navigator.pushNamed(context, '/home');
+                                          await authService.login(
+                                              email.text, password.text);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const HomePage()));
                                         } catch (e) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                  content:
+                                                      Text('Login Failed')));
                                           log(e.toString());
                                         }
                                       }

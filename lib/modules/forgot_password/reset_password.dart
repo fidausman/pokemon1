@@ -88,7 +88,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                                         log(widget.emailId);
                                         Dio dio = Dio();
                                         Response response = await dio.patch(
-                                            '${ApiConstants.ngrokUrl}/users/reset-password',
+                                            '${ApiConstants.cyclic}/users/reset-password',
                                             data: {
                                               "email": widget.emailId,
                                               "password": password.text

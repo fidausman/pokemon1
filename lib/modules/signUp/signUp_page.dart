@@ -34,6 +34,14 @@ class _SignUpPageState extends State<SignUpPage> {
     TextEditingController email = TextEditingController();
     TextEditingController password = TextEditingController();
     TextEditingController confirmPassword = TextEditingController();
+
+    String? validatePassword(String? value) {
+      if (value != password.text) {
+        return 'Passwords do not match';
+      }
+      return null;
+    }
+
     return Stack(
       children: [
         backgroundImage(),
@@ -87,7 +95,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   inputAction: TextInputAction.next,
                                 ),
                                 PasswordTextField(
-                                  validator: validaor,
+                                  validator: validatePassword,
                                   textFromField: confirmPassword,
                                   icon: Icons.lock,
                                   hint: 'Confirm Password',
@@ -108,7 +116,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       try {
                                         Dio dio = Dio();
                                         Response response = await dio.post(
-                                          '${ApiConstants.ngrokUrl}/auth/signup',
+                                          '${ApiConstants.cyclic}/auth/signup',
                                           data: {
                                             "userName": userName.text,
                                             "phone": phoneNo.text,

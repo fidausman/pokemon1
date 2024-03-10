@@ -80,7 +80,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                       // if (isValid) {
                                       try {
                                         Response response = await Dio().post(
-                                            '${ApiConstants.ngrokUrl}/users',
+                                            '${ApiConstants.cyclic}/users',
                                             data: {"email": email.text});
                                         if (response.statusCode == 201) {
                                           log('Checked');
