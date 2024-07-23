@@ -1,3 +1,4 @@
+import 'package:app/shared/repositories/stripe_service.dart';
 import 'package:flutter/material.dart';
 
 class TShirtPage extends StatelessWidget {
@@ -23,7 +24,21 @@ class TShirtPage extends StatelessWidget {
             ),
           ],
         ),
-        ElevatedButton(onPressed: () {}, child: const Text('Buy'))
+        ElevatedButton(
+            onPressed: () async {
+              var items = [
+                {"productPrice": 500, "productName": "T-Shirt", "qty": 1}
+              ];
+              await StripeService.stripePaymentCheckout(
+                  items, 500, context, true, onSuccess: () {
+                print("Success");
+              }, onCancel: () {
+                print("Cancel");
+              }, onError: (e) {
+                print("Error: " + e.toString());
+              });
+            },
+            child: const Text('Buy'))
       ]),
     );
   }
